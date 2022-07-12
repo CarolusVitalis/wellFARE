@@ -15,7 +15,7 @@ from setuptools import setup, find_packages
 from setuptools import setup, find_packages
 
 setup(name='wellfare',
-      version='0.1.0',
+      version='0.1.1',
       author='Valentin',
       description='',
       long_description=open('README.rst').read(),
