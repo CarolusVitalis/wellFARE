@@ -15,12 +15,12 @@ import scipy.linalg as linalg
 import numpy.linalg as linalg
 
 try:
-    import cvxopt
-    cvxopt.solvers.options["show_progress"] = False
-    cvm = cvxopt.base.matrix
-    CVXOPT_FOUND = True
+    import kvxopt
+    kvxopt.solvers.options["show_progress"] = False
+    cvm = kvxopt.base.matrix
+    KVXOPT_FOUND = True
 except ImportError:
-    CVXOPT_FOUND = False
+    KVXOPT_FOUND = False
 
 
 # alphas (= regularization parameters) checked during cross-validation.
@@ -221,8 +221,8 @@ def infer_control(H, y, Nic, alphas=None, eps_L=.0001, positive_solution=False,
         vv, Q = linalg.eigh(K)
 
     if positive_solution:
-        if not CVXOPT_FOUND:
-            raise ValueError("Install cvxopt for positive solutions. ")
+        if not KVXOPT_FOUND:
+            raise ValueError("Install kvxopt for positive solutions. ")
         if hasattr(alphas, '__iter__'):
             alpha, v, scores = GCV(y, HiL, alphas, Qv=(Q, vv))
         else:
@@ -267,8 +267,8 @@ def infer_control(H, y, Nic, alphas=None, eps_L=.0001, positive_solution=False,
 def compute_MM_KK_q(M, y, K=None, invcov=None, K_weigths=None):
     """ Precomputations to minimize |M*x-y|_2 + |K*x|_2
         subject to ( G*x <= h ) and  ( A*x = b )
-        This is a wrapper of cvxopt.
-        See documentation of cvxopt.solvers.qp for more. """
+        This is a wrapper of kvxopt.
+        See documentation of kvxopt.solvers.qp for more. """
 
     Nu = M.shape[1]
     if invcov is None:
@@ -297,12 +297,12 @@ def constrained_ridge(M=None, y=None, alpha=0, K=None, invcov=None,
                       solver=None, initvals=None, precomputed=None):
     """ Minimizes |M*x-y|_2 + |K*x|_2
         subject to ( G*x <= h ) and  ( A*x = b )
-        This is a wrapper of cvxopt.
-        See documentation of cvxopt.solvers.qp for more. """
+        This is a wrapper of kvxopt.
+        See documentation of kvxopt.solvers.qp for more. """
 
-    if not CVXOPT_FOUND:
-        raise ImportError("Constrained inversion requires cvxopt, but I didn't"
-                          " find it. Please install cvxopt.")
+    if not KVXOPT_FOUND:
+        raise ImportError("Constrained inversion requires kvxopt, but I didn't"
+                          " find it. Please install kvxopt.")
 
     if precomputed is not None:
 
@@ -325,7 +325,7 @@ def constrained_ridge(M=None, y=None, alpha=0, K=None, invcov=None,
     if b is not None:
         b = cvm(b)
 
-    sol = cvxopt.solvers.qp(P, q, G, h, A, b, solver, initvals)
+    sol = kvxopt.solvers.qp(P, q, G, h, A, b, solver, initvals)
     xx = np.array(sol['x']).flatten()
     return xx
 
